@@ -1,6 +1,30 @@
 import React, { useState } from "react";
 import "./App.css";
 
+function withHighlight(WrappedComponent) {
+  return function (props, ...args) {
+    if (props.views >= 1000) {
+      return (
+        <Popular>{WrappedComponent.apply(this, [props, ...args])}</Popular>
+      );
+    } else if (props.views < 100) {
+      return <New>{WrappedComponent.apply(this, [props, ...args])}</New>;
+    } else {
+      return WrappedComponent.apply(this, [props, ...args]);
+    }
+  };
+}
+
+function withType({ ...props }) {
+  switch (props.type) {
+    case "video":
+      return <Video {...props} />;
+
+    case "article":
+      return <Article {...props} />;
+  }
+}
+
 function New(props) {
   return (
     <div className="wrap-item wrap-item-new">
@@ -35,9 +59,9 @@ function Video(props) {
     <div className="item item-video">
       <iframe
         src={props.url}
-        frameborder="0"
+        frameBorder="0"
         allow="autoplay; encrypted-media"
-        allowfullscreen
+        allowFullScreen
       ></iframe>
       <p className="views">Просмотров: {props.views}</p>
     </div>
@@ -45,14 +69,10 @@ function Video(props) {
 }
 
 function List(props) {
-  return props.list.map((item) => {
-    switch (item.type) {
-      case "video":
-        return <Video {...item} />;
+  const HighlightedComponent = withHighlight(withType);
 
-      case "article":
-        return <Article {...item} />;
-    }
+  return props.list.map((item, i) => {
+    return <HighlightedComponent {...item} key={i} />;
   });
 }
 

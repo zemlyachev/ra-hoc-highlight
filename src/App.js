@@ -4,13 +4,11 @@ import "./App.css";
 function withHighlight(WrappedComponent) {
   return function (props, ...args) {
     if (props.views >= 1000) {
-      return (
-        <Popular>{WrappedComponent.apply(this, [props, ...args])}</Popular>
-      );
+      return <Popular>{<WrappedComponent {...props} {...args} />}</Popular>;
     } else if (props.views < 100) {
-      return <New>{WrappedComponent.apply(this, [props, ...args])}</New>;
+      return <New>{<WrappedComponent {...props} {...args} />}</New>;
     } else {
-      return WrappedComponent.apply(this, [props, ...args]);
+      return <WrappedComponent {...props} {...args} />;
     }
   };
 }
